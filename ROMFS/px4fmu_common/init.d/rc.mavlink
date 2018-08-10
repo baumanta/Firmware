@@ -63,7 +63,7 @@ then
 	# Use ttyS3 (TELEM4) for MAVLink on FMUv5 in addition to ttyS1 (TELEM1) and ttyS2 (TELEM2)
 	if ver hwcmp PX4FMU_V5
 	then
-		mavlink start -r 2000 -b 57600 -d /dev/ttyS3
+		#mavlink start -r 2000 -b 57600 -d /dev/ttyS3
 	fi
 
 	if ver hwcmp CRAZYFLIE OMNIBUS_F4SD
