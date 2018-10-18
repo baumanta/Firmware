@@ -51,6 +51,7 @@
 #include <uORB/topics/vehicle_constraints.h>
 #include <uORB/topics/vehicle_attitude.h>
 #include <uORB/topics/vehicle_trajectory_waypoint.h>
+#include <uORB/topics/obstacle_distance.h>
 #include "SubscriptionArray.hpp"
 
 class FlightTask : public ModuleParams
@@ -112,7 +113,7 @@ public:
 	 * Set vehicle constraints.
 	 * The constraints can vary with task.
 	 */
-	void setConstraints(vehicle_constraints_s& constraints) { _constraints = constraints; }
+	void setRanges(obstacle_distance_s& obstacle_distance) { _obstacle_distance = obstacle_distance; }
 
 	/**
 	 * Get avoidance desired waypoint
@@ -201,6 +202,7 @@ protected:
 	 * The constraints can vary with tasks.
 	 */
 	vehicle_constraints_s _constraints{};
+	obstacle_distance_s _obstacle_distance;
 
 	/**
 	 * Desired waypoints.

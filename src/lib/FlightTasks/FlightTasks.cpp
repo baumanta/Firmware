@@ -47,10 +47,10 @@ const vehicle_constraints_s FlightTasks::getConstraints()
 	}
 }
 
-void FlightTasks::setConstraints(vehicle_constraints_s& constraints)
+void FlightTasks::setRanges(obstacle_distance_s& obstacle_distance)
 {
 	if (isAnyTaskActive()) {
-		_current_task.task->setConstraints(constraints);
+		_current_task.task->setRanges(obstacle_distance);
 	}
 }
 

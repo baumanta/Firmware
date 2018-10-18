@@ -700,7 +700,6 @@ MulticopterPositionControl::task_main()
 			//use range sensor to update constraints
 			if(MPC_USE_OBS_SENS.get()){
 				update_range_constraints(_obstacle_distance, constraints);
-				_flight_tasks.setConstraints(constraints);
 			}
 
 
@@ -1066,12 +1065,12 @@ void
 MulticopterPositionControl::update_range_constraints(const obstacle_distance_s &obstacle_distance,
 		vehicle_constraints_s &constraints)
 {
+
+	obstacle_distance_s obstacle_distance_processed = obstacle_distance;
 	constraints.velocity_limits[0] = 0.0;
 	constraints.velocity_limits[1] = 0.0;
 	constraints.velocity_limits[2] = 0.0;
 	constraints.velocity_limits[3] = 0.0;
-
-	float max_detection_distance = obstacle_distance.max_distance/100.0; //convert to meters
 
 	for(int i = 0; i<72; i++){
 
@@ -1079,19 +1078,22 @@ MulticopterPositionControl::update_range_constraints(const obstacle_distance_s &
 		if(obstacle_distance.distances[i] < obstacle_distance.max_distance &&
 				obstacle_distance.distances[i] > obstacle_distance.min_distance && i*obstacle_distance.increment < 360){
 
-			float distance = obstacle_distance.distances[i]/100.0; //convert to meters
-			float angle = i*obstacle_distance.increment * (M_PI/180.0);
+			int distance = math::max(obstacle_distance.distances[i] - (int)(MPC_MIN_OBS_DIST.get()*100), 0);  //obstacle distances are in cm
+			float increment = obstacle_distance.increment * (float)(M_PI/180.0);
+			float alpha = i*increment;
 
-			//calculate normalized velocity reductions
-			float vel_lim_x =  (max_detection_distance - distance)/(max_detection_distance - MPC_MIN_OBS_DIST.get()) * cos(angle);
-			float vel_lim_y =  (max_detection_distance - distance)/(max_detection_distance - MPC_MIN_OBS_DIST.get()) * sin(angle);
-			if(vel_lim_x > 0 && vel_lim_x > constraints.velocity_limits[0]) constraints.velocity_limits[0] = vel_lim_x;
-			if(vel_lim_y > 0 && vel_lim_y > constraints.velocity_limits[1]) constraints.velocity_limits[1] = vel_lim_y;
-			if(vel_lim_x < 0 && -vel_lim_x > constraints.velocity_limits[2]) constraints.velocity_limits[2] = -vel_lim_x;
-			if(vel_lim_y < 0 && -vel_lim_y > constraints.velocity_limits[3]) constraints.velocity_limits[3] = -vel_lim_y;
+			for(int j = 0; j<72; j++){
+				float beta = j*obstacle_distance.increment * (M_PI/180.0);
+				if(abs(alpha-beta) < (float)M_PI/2.0f - increment){
+					int new_distance = (int)(distance/cos(beta-alpha));
+					if(new_distance < obstacle_distance_processed.distances[j]) obstacle_distance_processed.distances[j] = new_distance;
+				}
+			}
 		}
 	}
+
 	publish_constraints(constraints);
+	_flight_tasks.setRanges(obstacle_distance_processed);
 }
 
 void
