@@ -43,7 +43,7 @@ set(msg_files
 	camera_trigger.msg
 	collision_report.msg
 	commander_state.msg
-	companion_status.msg
+	companion_process_status.msg
 	cpuload.msg
 	debug_key_value.msg
 	debug_value.msg

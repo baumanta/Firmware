@@ -36,7 +36,7 @@
 
 #include "state_machine_helper.h"
 #include "failure_detector/FailureDetector.hpp"
-#include "companion_status.h"
+#include "companion_process_status.h"
 
 #include <controllib/blocks.hpp>
 #include <px4_module.h>
@@ -133,7 +133,7 @@ private:
 	FailureDetector _failure_detector;
 	bool _failure_detector_termination_printed{false};
 
-	Companion_Status _companion_status;
+	Companion_Process_Status _companion_process_status;
 
 	bool handle_command(vehicle_status_s *status, const vehicle_command_s &cmd,
 			    actuator_armed_s *armed, home_position_s *home, orb_advert_t *home_pub, orb_advert_t *command_ack_pub, bool *changed);
