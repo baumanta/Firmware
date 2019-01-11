@@ -3938,11 +3938,11 @@ void Commander::data_link_check(bool &status_changed)
 		}
 	}
 
-	// ONBOARD CONTROLLER data link loss failsafe (hard coded 5 seconds)
+	// ONBOARD CONTROLLER data link loss failsafe (hard coded 7 seconds)
 	//  only issue a periodic warning for now
 	if ((_datalink_last_heartbeat_onboard_controller > 0)
-	    && (hrt_elapsed_time(&_datalink_last_heartbeat_onboard_controller) > 5_s) &&
-	    (hrt_elapsed_time(&_onboard_controller_lost) > 5_s)) {
+	    && (hrt_elapsed_time(&_datalink_last_heartbeat_onboard_controller) > 7_s) &&
+	    (hrt_elapsed_time(&_onboard_controller_lost) > 7_s)) {
 
 		_onboard_controller_lost = hrt_absolute_time();
 		mavlink_log_critical(&mavlink_log_pub, "ONBOARD CONTROLLER LOST");
@@ -3952,15 +3952,15 @@ void Commander::data_link_check(bool &status_changed)
 	if (_obs_avoid.get()) {
 
 		//if avoidance never started
-		if (_datalink_last_heartbeat_avoidance_system == 0 && hrt_elapsed_time(&_avoidance_system_not_started) > 5_s) {
+		if (_datalink_last_heartbeat_avoidance_system == 0 && hrt_elapsed_time(&_avoidance_system_not_started) > 7_s) {
 			_avoidance_system_not_started = hrt_absolute_time();
 			mavlink_log_critical(&mavlink_log_pub, "AVOIDANCE SYSTEM DID NOT START");
 		}
 
 		//if heartbeats stop
 		if ((_datalink_last_heartbeat_avoidance_system > 0)
-		    && (hrt_elapsed_time(&_datalink_last_heartbeat_avoidance_system) > 5_s) &&
-		    (hrt_elapsed_time(&_avoidance_system_lost) > 5_s)) {
+		    && (hrt_elapsed_time(&_datalink_last_heartbeat_avoidance_system) > 7_s) &&
+		    (hrt_elapsed_time(&_avoidance_system_lost) > 7_s)) {
 			_avoidance_system_lost = hrt_absolute_time();
 			mavlink_log_critical(&mavlink_log_pub, "AVOIDANCE SYSTEM LOST");
 		}
