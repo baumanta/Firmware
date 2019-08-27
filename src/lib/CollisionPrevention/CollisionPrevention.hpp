@@ -77,9 +77,25 @@ public:
 	void modifySetpoint(matrix::Vector2f &original_setpoint, const float max_speed,
 			    const matrix::Vector2f &curr_pos, const matrix::Vector2f &curr_vel);
 
+protected:
+
+	obstacle_distance_s _obstacle_map_body_frame {};
+	uint64_t _data_timestamps[72];
+
+	void _addDistanceSensorData(distance_sensor_s &distance_sensor, const matrix::Quatf &attitude);
+
+	/**
+	 * Updates obstacle distance message with measurement from offboard
+	 * @param obstacle, obstacle_distance message to be updated
+	 */
+	void _addObstacleSensorData(const obstacle_distance_s &obstacle, const matrix::Quatf &vehicle_attitude);
+
+
 private:
 
 	bool _interfering{false};		/**< states if the collision prevention interferes with the user input */
+
+
 
 	orb_advert_t _constraints_pub{nullptr};  	/**< constraints publication */
 	orb_advert_t _mavlink_log_pub{nullptr};	 	/**< Mavlink log uORB handle */
@@ -130,6 +146,8 @@ private:
 		return offset;
 	}
 
+
+
 	/**
 	 * Computes collision free setpoints
 	 * @param setpoint, setpoint before collision prevention intervention
@@ -144,21 +162,17 @@ private:
 	 * @param adapted_setpoint, collision prevention adaped setpoint
 	 */
 	void _publishConstrainedSetpoint(const matrix::Vector2f &original_setpoint, const matrix::Vector2f &adapted_setpoint);
+
 	/**
 	 * Publishes obstacle_distance message with fused data from offboard and from distance sensors
 	 * @param obstacle, obstacle_distance message to be publsihed
 	 */
 	void _publishObstacleDistance(obstacle_distance_s &obstacle);
+
 	/**
-	 * Updates obstacle distance message with measurement from offboard
-	 * @param obstacle, obstacle_distance message to be updated
+	 * Aggregates the sensor data into a internal obstacle map in body frame
 	 */
-	void _updateOffboardObstacleDistance(obstacle_distance_s &obstacle);
-	/**
-	 * Updates obstacle distance message with measurement from distance sensors
-	 * @param obstacle, obstacle_distance message to be updated
-	 */
-	void _updateDistanceSensor(obstacle_distance_s &obstacle);
+	void _updateObstacleMap();
 	/**
 	 * Publishes vehicle command.
 	 */
